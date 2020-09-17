@@ -77,9 +77,47 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(h, t) => Cons(h, init(t))
   }
 
-  def length[A](l: List[A]): Int = ???
+  def length[A](l: List[A]): Int = 
+    foldRight(l, 0)((_, x:Int) => x + 1)
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
+  //def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = {
+  //  @annotation.tailrec
+  //  def loop(l, prev): B = l match {
+  //    case Nil => prev
+  //    case Cons(x, xs) => loop(xs, f(x, prev))
+  // }
+  //  loop(l, z)
+  //}
 
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = 
+    l match {
+      case Nil => z
+      case Cons(a, as) => foldLeft(as, f(z, a))(f)
+    
+    }
+
+  def sum3(l: List[Int]): Int = 
+    foldLeft(l, 0)((_ + _))
+
+  def product3(l: List[Double]): Double = 
+    foldLeft(l, 1.0)((_ * _ ))
+  
+  def lenght3[A](l: List[A]): Int = 
+    foldLeft(l, 0)((x: Int, _) => x + 1)
+  
+  def reverse[A](l: List[A]): List[A] = 
+    foldRight(l, Nil: List[A])((x, y) => append(y, List(x)))
+ 
+  def reverseLeft[A](l: List[A]): List[A] =
+    foldLeft(l, Nil: List[A])((x, y) => Cons(y, x))
+
+  /* FoldRight using foldLeft */
+  def foldRight2[A,B](as: List[A], z: B)(f: (A, B) => B): B =
+    foldLeft(reverseLeft(as), z)((w, v) => f(v, w))
+
+  /* FoldLeft using foldRight (using foldLeft) */
+  def foldLeft2[A,B](l: List[A], z: B)(f: (B, A) => B): B =
+    foldRight2(reverseLeft(l), z)((w, v) => f(v,w))
+  
   def map[A,B](l: List[A])(f: A => B): List[B] = ???
 }
