@@ -124,5 +124,16 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   def appendRight[A](a1: List[A], a2: List[A]): List[A] =
     foldRight2(a1, a2)((x, l) => Cons(x, l))
+
+  // This solution takes more than O(N). 
+  // On each new append, the foldLeft will go through the whole result list taking O(N*K) 
+  // where N is the sum of the elements of the input lists and K is the number of lists
+  def concatenateLeft[A](as: List[List[A]]): List[A] =
+      foldLeft(reverseLeft(as), Nil: List[A])((y: List[A], x: List[A]) => appendLeft(x,y))
+  
+  // This solution takes O(N) where N is the sum of the elements of the input lists
+  def concatenate[A](as: List[List[A]]): List[A] =
+      foldRight(as, Nil: List[A])(appendRight(_, _))
+  
   def map[A,B](l: List[A])(f: A => B): List[B] = ???
 }
