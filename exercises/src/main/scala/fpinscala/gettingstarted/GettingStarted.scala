@@ -194,3 +194,35 @@ object PolymorphicFunctions {
   def compose[A,B,C](f: B => C, g: A => B): A => C =
     (a: A) => f(g(a))
 }
+
+
+object TestPolymorphicFunctions {
+
+  import PolymorphicFunctions._
+
+  def main(args: Array[String]): Unit = {
+    println("Testing isSorted")
+    val greaterThan = (a: Int, b: Int) => a >= b
+    assert(isSorted(Array(2,3), greaterThan))
+    assert(isSorted(Array(1,2,3), greaterThan))
+    assert(!isSorted(Array(3,1,2), greaterThan))
+    assert(isSorted(Array(1), greaterThan))
+    assert(isSorted(Array(3, 3), greaterThan))
+
+    println("Testing Curry")
+    val greaterThanCurry = curry(greaterThan)
+    assert(!greaterThanCurry(1)(2))
+    assert(greaterThanCurry(3)(2))
+
+    println("Testing Uncurry")
+    val greaterThanUncurry = uncurry(greaterThanCurry)
+    assert(!greaterThanUncurry(1,2))
+    assert(greaterThanUncurry(3,2))
+
+    println("Testing Compose")
+    val timesThree = (a: Int) => a * 3
+    val plusOne = (a: Int) => a + 1
+    assert(9 == compose(timesThree, plusOne)(2))
+    assert(7 == compose(plusOne, timesThree)(2))
+  }
+}
