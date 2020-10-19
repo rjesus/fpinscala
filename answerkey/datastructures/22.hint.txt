@@ -1,1 +1,1 @@
--
+To match on multiple values, we can put the values into a pair and match on the pair, as shown in the answer, and the same syntax extends to matching on N values (see sidebar "Pairs and tuples in Scala" for more about pair and tuple objects)
