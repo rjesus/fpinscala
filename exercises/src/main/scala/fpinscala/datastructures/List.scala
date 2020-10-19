@@ -135,5 +135,77 @@ object List { // `List` companion object. Contains functions for creating and wo
   def concatenate[A](as: List[List[A]]): List[A] =
       foldRight(as, Nil: List[A])(appendRight(_, _))
   
-  def map[A,B](l: List[A])(f: A => B): List[B] = ???
+  def addOne(l: List[Int]): List[Int] =
+    foldRight2(l, Nil: List[Int])((a, b) => Cons(a + 1, b)) 
+
+  def doubleListToString(l: List[Double]): List[String] = 
+    foldRight2(l, Nil: List[String])((a, b) => Cons(a.toString, b))
+
+  def map[A,B](l: List[A])(f: A => B): List[B] = 
+    foldRight2(l, Nil: List[B])((a, b) => Cons(f(a), b))
+
+  def filter[A](l: List[A])(f: A => Boolean): List[A] = 
+    foldRight2(l, Nil: List[A])((a, b) => if (f(a)) Cons(a, b) else b)
+
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] = 
+    concatenate(map(l)(f))
+
+  def filter2[A](l: List[A])(f: A => Boolean): List[A] = 
+    flatMap(l)(a => if (f(a)) List(a) else Nil)
+
+  def addElements(l1: List[Int], l2: List[Int]): List[Int] = {
+    def loop(l1: List[Int], l2: List[Int], z: List[Int]): List[Int] = l1 match {
+      case Nil => z
+      case Cons(a, as) => l2 match {
+        case Nil => z
+        case Cons(b, bs) => loop(as, bs, append(z, List(a+b)))
+      }
+    }
+    loop(l1, l2, Nil: List[Int])
+  }
+  // Solution with generic types didn't work :(
+  // def addElements[A](as: List[A], bs: List[A]): List[A] = {
+  //   def loop(as: List[A], bs: List[A], cs: List[A]): List[A] = as match {
+  //     case Nil => append(bs,cs)
+  //     case Cons(ah, at) => bs match {
+  //       case Nil => append(cs, as)
+  //       case Cons(bh, bt) => loop(at, bt, append(cs, List(ah+bh)))
+  //     }
+  //   }
+  //   loop(as, bs, Nil: List[A])
+  // }
+
+  def zipWith[A,B](l1: List[A], l2: List[A])(f: (A, A) => B): List[B] = {
+    def loop(l1: List[A], l2: List[A], z: List[B]): List[B] = l1 match {
+      case Nil => z
+      case Cons(a, as) => l2 match {
+        case Nil => z
+        case Cons(b, bs) => loop(as, bs, append(z, List(f(a, b)))) 
+      }
+    }
+    loop(l1, l2, Nil: List[B])
+  }
+}
+
+object TestList {
+
+  import List._
+
+  def main(args: Array[String]): Unit = {
+    assert(List(2,3,4) == List.addOne(List(1,2,3)))
+
+    assert(List("3.5", "4.9", "5.5") == List.doubleListToString(List(3.5, 4.9, 5.5)))
+
+    assert(List.addOne(List(1,2,3)) == map(List(1,2,3))(_ + 1))
+    assert(List.doubleListToString(List(3.5, 4.9, 5.5)) == map(List(3.5, 4.9, 5.5))(_.toString))
+
+    assert(List(2,4) == filter(List(1,2,3,4,5))(a => (a % 2) == 0))
+
+    assert(List(1,1,2,2,3,3) == flatMap(List(1,2,3))(i => List(i,i)))
+
+    assert(List(2,4) == filter2(List(1,2,3,4,5))(a => (a % 2) == 0))
+
+    assert(List(5,7,9) == addElements(List(1,2,3), List(4,5,6)))
+    assert(List(5,7,9) == zipWith(List(1,2,3), List(4,5,6))(_ + _))
+  }
 }
