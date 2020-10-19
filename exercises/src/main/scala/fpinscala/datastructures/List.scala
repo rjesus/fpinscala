@@ -77,7 +77,7 @@ object List { // `List` companion object. Contains functions for creating and wo
     case Cons(h, t) => Cons(h, init(t))
   }
 
-  def length[A](l: List[A]): Int = 
+  def length[A](l: List[A]): Int =
     foldRight(l, 0)((_, x:Int) => x + 1)
 
   //def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = {
@@ -89,25 +89,25 @@ object List { // `List` companion object. Contains functions for creating and wo
   //  loop(l, z)
   //}
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = 
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B =
     l match {
       case Nil => z
       case Cons(a, as) => foldLeft(as, f(z, a))(f)
-    
+
     }
 
-  def sum3(l: List[Int]): Int = 
+  def sum3(l: List[Int]): Int =
     foldLeft(l, 0)((_ + _))
 
-  def product3(l: List[Double]): Double = 
+  def product3(l: List[Double]): Double =
     foldLeft(l, 1.0)((_ * _ ))
-  
-  def lenght3[A](l: List[A]): Int = 
+
+  def lenght3[A](l: List[A]): Int =
     foldLeft(l, 0)((x: Int, _) => x + 1)
-  
-  def reverse[A](l: List[A]): List[A] = 
+
+  def reverse[A](l: List[A]): List[A] =
     foldRight(l, Nil: List[A])((x, y) => append(y, List(x)))
- 
+
   def reverseLeft[A](l: List[A]): List[A] =
     foldLeft(l, Nil: List[A])((x, y) => Cons(y, x))
 
@@ -118,39 +118,39 @@ object List { // `List` companion object. Contains functions for creating and wo
   /* FoldLeft using foldRight (using foldLeft) */
   def foldLeft2[A,B](l: List[A], z: B)(f: (B, A) => B): B =
     foldRight2(reverseLeft(l), z)((w, v) => f(v,w))
- 
+
   def appendLeft[A](a1: List[A], a2: List[A]): List[A] =
     foldLeft(reverseLeft(a1), a2)((l: List[A], x: A) => Cons(x, l))
 
   def appendRight[A](a1: List[A], a2: List[A]): List[A] =
     foldRight2(a1, a2)((x, l) => Cons(x, l))
 
-  // This solution takes more than O(N). 
-  // On each new append, the foldLeft will go through the whole result list taking O(N*K) 
+  // This solution takes more than O(N).
+  // On each new append, the foldLeft will go through the whole result list taking O(N*K)
   // where N is the sum of the elements of the input lists and K is the number of lists
   def concatenateLeft[A](as: List[List[A]]): List[A] =
-      foldLeft(reverseLeft(as), Nil: List[A])((y: List[A], x: List[A]) => appendLeft(x,y))
-  
+    foldLeft(reverseLeft(as), Nil: List[A])((y: List[A], x: List[A]) => appendLeft(x,y))
+
   // This solution takes O(N) where N is the sum of the elements of the input lists
   def concatenate[A](as: List[List[A]]): List[A] =
-      foldRight(as, Nil: List[A])(appendRight(_, _))
-  
-  def addOne(l: List[Int]): List[Int] =
-    foldRight2(l, Nil: List[Int])((a, b) => Cons(a + 1, b)) 
+    foldRight(as, Nil: List[A])(appendRight(_, _))
 
-  def doubleListToString(l: List[Double]): List[String] = 
+  def addOne(l: List[Int]): List[Int] =
+    foldRight2(l, Nil: List[Int])((a, b) => Cons(a + 1, b))
+
+  def doubleListToString(l: List[Double]): List[String] =
     foldRight2(l, Nil: List[String])((a, b) => Cons(a.toString, b))
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = 
+  def map[A,B](l: List[A])(f: A => B): List[B] =
     foldRight2(l, Nil: List[B])((a, b) => Cons(f(a), b))
 
-  def filter[A](l: List[A])(f: A => Boolean): List[A] = 
+  def filter[A](l: List[A])(f: A => Boolean): List[A] =
     foldRight2(l, Nil: List[A])((a, b) => if (f(a)) Cons(a, b) else b)
 
-  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] = 
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] =
     concatenate(map(l)(f))
 
-  def filter2[A](l: List[A])(f: A => Boolean): List[A] = 
+  def filter2[A](l: List[A])(f: A => Boolean): List[A] =
     flatMap(l)(a => if (f(a)) List(a) else Nil)
 
   def addElements(l1: List[Int], l2: List[Int]): List[Int] = {
@@ -180,7 +180,7 @@ object List { // `List` companion object. Contains functions for creating and wo
       case Nil => z
       case Cons(a, as) => l2 match {
         case Nil => z
-        case Cons(b, bs) => loop(as, bs, append(z, List(f(a, b)))) 
+        case Cons(b, bs) => loop(as, bs, append(z, List(f(a, b))))
       }
     }
     loop(l1, l2, Nil: List[B])
