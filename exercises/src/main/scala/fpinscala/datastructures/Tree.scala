@@ -39,6 +39,9 @@ object Tree {
 
     def depthFold[A](t: Tree[A]): Int =
         fold(t)(_ => 1)((l: Int, r: Int) => 1 + (l max r))
+
+    def mapFold[A, B](t: Tree[A])(f: A => B): Tree[B] =
+        fold(t)((v: A) => Leaf(f(v)): Tree[B])((l: Tree[B], r: Tree[B]) => Branch(l, r))
 }
 
 object TestTree {
@@ -72,5 +75,8 @@ object TestTree {
     assert(1 == Tree.depthFold(Leaf(2)))
     assert(2 == Tree.depthFold(Branch(Leaf(1), Leaf(2))))
     assert(3 == Tree.depthFold(Branch(Leaf(5), Branch(Leaf(6), Leaf(2)))))
+
+    assert(Leaf(6) == mapFold(Leaf(3))(_ * 2))
+    assert(Branch(Leaf(2), Leaf(4)) == mapFold(Branch(Leaf(1), Leaf(2)))(_ * 2))
   }
 }
