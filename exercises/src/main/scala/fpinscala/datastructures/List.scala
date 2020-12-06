@@ -186,11 +186,18 @@ object List { // `List` companion object. Contains functions for creating and wo
     loop(l1, l2, Nil: List[B])
   }
 
-  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
-    case (_, Nil) => true 
-    case (Cons(a, as), Cons(b, bs)) if (a == b) => hasSubsequence(as, bs)
-    case (Cons(_, as), _) => hasSubsequence(as, sub)
-    case _ => false
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = {
+    def helper[A](sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+      case (_, Nil) => true 
+      case (Cons(a, as), Cons(b, bs)) if (a == b) => helper(as, bs)
+      case _ => false
+    }
+    (sup, sub) match {
+      case (_, Nil) => true 
+      case (Cons(a, as), Cons(b, bs)) if (a == b) => helper(as, bs)
+      case (Cons(_, as), _) => hasSubsequence(as, sub)
+      case _ => false
+    }
   }
 }
 
@@ -219,5 +226,6 @@ object TestList {
     assert(hasSubsequence(List(1, 2, 3, 4), List(2,3)))
     assert(hasSubsequence(List(1, 2, 3, 4), List(4)))
     assert(!hasSubsequence(List(1, 2, 3, 4), List(2,1)))
+    assert(!hasSubsequence(List(1, 2, 3, 4), List(1,3,4)))
   }
 }
