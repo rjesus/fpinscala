@@ -59,7 +59,8 @@ object Option {
     mean(xs) flatMap ((m) => mean(xs map ((x) => math.pow(x - m, 2))))
   }
 
-  def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
+  def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = 
+    a flatMap (a1 => b flatMap (b1 => Some(f(a1, b1))))
 
   def sequence[A](a: List[Option[A]]): Option[List[A]] = ???
 
@@ -92,5 +93,8 @@ object TestOption {
     assert(Some(142.775) == variance2(Seq(21.3, 38.4, 12.7, 41.6)))
     assert(None == variance2(Seq()))
 
+    assert(Some(7) == map2(Some(4), Some(3))(_ + _))
+    assert(None == map2(None: Option[Int], Some(3))(_ + _))
+    assert(None == map2(Some(4), None: Option[Int])(_ + _))
   }
 }
