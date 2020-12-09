@@ -49,7 +49,15 @@ object Option {
   def mean(xs: Seq[Double]): Option[Double] =
     if (xs.isEmpty) None
     else Some(xs.sum / xs.length)
-  def variance(xs: Seq[Double]): Option[Double] = ???
+
+  def variance(xs: Seq[Double]): Option[Double] = {
+    val m = mean(xs)
+    mean(xs map ((x) => m map ((m1) => math.pow(x - m1, 2)) getOrElse 0.0))
+  }
+  
+  def variance2(xs: Seq[Double]): Option[Double] = {
+    mean(xs) flatMap ((m) => mean(xs map ((x) => math.pow(x - m, 2))))
+  }
 
   def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
 
@@ -77,5 +85,12 @@ object TestOption {
 
     assert(Some(7) == (Some(7) filter (_ > 6)))
     assert(None == (Some(5) filter (_ > 6)))
+
+    assert(Some(142.775) == variance(Seq(21.3, 38.4, 12.7, 41.6)))
+    assert(None == variance(Seq()))
+
+    assert(Some(142.775) == variance2(Seq(21.3, 38.4, 12.7, 41.6)))
+    assert(None == variance2(Seq()))
+
   }
 }
