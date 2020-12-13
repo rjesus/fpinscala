@@ -62,9 +62,14 @@ object Option {
   def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = 
     a flatMap (a1 => b flatMap (b1 => Some(f(a1, b1))))
 
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = ???
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = 
+    a.foldRight(Some(List()): Option[List[A]])((x, y) => x flatMap (x1 => (y map (x1 :: _))))
 
-  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = ???
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = 
+    a.foldRight[Option[List[B]]](Some(Nil))((x, y) => map2(f(x),y)(_ :: _))
+
+  def sequenceTraverse[A](a: List[Option[A]]): Option[List[A]] = 
+    traverse(a)(x => x)
 }
 
 object TestOption {
@@ -96,5 +101,14 @@ object TestOption {
     assert(Some(7) == map2(Some(4), Some(3))(_ + _))
     assert(None == map2(None: Option[Int], Some(3))(_ + _))
     assert(None == map2(Some(4), None: Option[Int])(_ + _))
+
+    assert(Some(List(1,2,3)) == sequence(List(Some(1), Some(2), Some(3))))
+    assert(None == sequence(List(Some(1), None, Some(3))))
+
+    assert(Some(List(2,3,4)) == traverse(List(1,2,3))(x => Some(x + 1)))
+    assert(None == traverse(List(1,2,3,0))(x => if (x >= 1) Some(x + 1) else None))
+
+    assert(Some(List(1,2,3)) == sequenceTraverse(List(Some(1), Some(2), Some(3))))
+    assert(None == sequenceTraverse(List(Some(1), None, Some(3))))
   }
 }
